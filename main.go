@@ -1,17 +1,45 @@
 package main
 
 import (
-    "log"
+	"embed"
+	"io/fs"
+	"log"
+	"net/http"
 
-    "github.com/gofiber/fiber/v2"
+	"github.com/EwenQuim/todo-app/app/controllers"
+	"github.com/EwenQuim/todo-app/database"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
+//go:generate yarn --cwd frontend build
+
+//go:embed frontend/build/*
+var reactBuild embed.FS
+
 func main() {
-    app := fiber.New()
+	fsub, err := fs.Sub(reactBuild, "frontend/build")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    app.Get("/", func(c *fiber.Ctx) error {
-        return c.SendString("Hello, World!")
-    })
+	dab := database.InitDatabase("todo.db")
 
-    log.Fatal(app.Listen(":3000"))
+	s := database.Service{DB: dab}
+
+	app := fiber.New()
+
+	controllers.RegisterRoutes(app, s)
+
+	app.Use(filesystem.New(filesystem.Config{
+		Root:         http.FS(fsub),
+		NotFoundFile: "index.html",
+	}))
+	app.Use(cors.New())
+	// app.Static("", "./frontend/build") // For not embedding the build folder
+	app.Use(logger.New())
+
+	log.Fatal(app.Listen(":8083"))
 }
