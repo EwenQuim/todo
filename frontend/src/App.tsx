@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
 import './App.css';
-import TodoList from './components/Todo';
+import './index.css'
+
+import React, { useEffect, useState } from 'react';
+
 import { Todo } from './types';
+import TodoList from './components/Todo';
 
 const App = () => {
   const [input, setInput] = useState("")

@@ -1,6 +1,5 @@
 import { Item } from "../types"
-import React, { useEffect, useState } from 'react';
-import { tryToFetch } from "../utils/utils";
+import React from 'react';
 
 export const ItemView = ({ item, switchItem, deleteItem }: { item: Item, switchItem: any, deleteItem: any }) => {
 
@@ -13,7 +12,7 @@ export const ItemView = ({ item, switchItem, deleteItem }: { item: Item, switchI
 
       {" "}
       <button onClick={async () => deleteItem(item)}>
-        delete
+        x
       </button>
     </span>
   )

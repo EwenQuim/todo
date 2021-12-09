@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
 import { Item, Todo } from '../types';
+import React, { useEffect, useState } from 'react';
+
+import { ItemView } from './ItemView';
 import ReactModal from 'react-modal';
 import { tryToFetch } from '../utils/utils';
-import { ItemView } from './ItemView';
 
 const TodoList = ({ uuid }: { uuid: string }) => {
   const [input, setInput] = useState("")
@@ -11,8 +12,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
   const [online, setOnline] = useState(true)
 
-  const getTodo = () => {
-
+  useEffect(() => {
     fetch('/api/todo/' + uuid)
       .then(response => response.json())
       .then(data => {
@@ -22,16 +22,11 @@ const TodoList = ({ uuid }: { uuid: string }) => {
           setItems(data.Items)
         }
       })
-  }
-
-  useEffect(() => {
-    getTodo()
   }, [])
 
   useEffect(() => {
     document.title = todo.Title
-    console.log("updated todo :", todo)
-  }, [todo])
+  }, [todo.Title])
 
 
 
