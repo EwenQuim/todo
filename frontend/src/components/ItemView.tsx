@@ -20,9 +20,9 @@ export const ItemView = ({ item, switchItem, deleteItem }: { item: Item, switchI
       </label>
 
       {" "}
-      <button className="flex-none p-1 rounded w-8 h-8" onClick={async () => deleteItem(item)}>
-        🗑
-      </button>
+      {/* <button className="flex-none p-1 rounded w-8 h-8" onClick={async () => deleteItem(item)}>
+        ✏
+      </button> */}
     </div>
   )
 }

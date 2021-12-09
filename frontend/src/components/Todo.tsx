@@ -63,6 +63,14 @@ const TodoList = ({ uuid }: { uuid: string }) => {
     tryToFetch('/api/todo/' + uuid + "/" + item.ID + "/delete", setOnline)
   }
 
+  const deleteItems = () => {
+    for (let item of items) {
+      if (item.Done) {
+        deleteItem(item)
+      }
+    }
+  }
+
   const sortFunction = (a: Item, b: Item) => {
     if (a.Content.includes(': ') == b.Content.includes(': ')) {
       return a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1
@@ -126,6 +134,13 @@ const TodoList = ({ uuid }: { uuid: string }) => {
               )
             })}
           </ul>
+        </div>
+
+        <div className='flex items-center my-6'>
+          <span className='flex-1'> Clean up (✅ ➡ 🗑)</span>
+          <button className="m-2 p-1 rounded w-8 h-8" onClick={deleteItems}>
+            🧹
+          </button>
         </div>
 
       </div>
