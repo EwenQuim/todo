@@ -91,7 +91,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
         <div>
           <ul>
-            {items.map((item) => (
+            {items.sort((a, b) => a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1).map((item) => (
               <li>
                 <ItemView item={item} deleteItem={deleteItem} switchItem={switchItem} />
               </li>
