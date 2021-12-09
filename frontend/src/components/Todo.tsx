@@ -1,9 +1,9 @@
 import { Item, Todo } from '../types';
 import React, { useEffect, useState } from 'react';
+import { capitalizeFirstLetter, detectRegex, tryToFetch } from '../utils/utils';
 
 import { ItemView } from './ItemView';
 import ReactModal from 'react-modal';
-import { tryToFetch } from '../utils/utils';
 
 const TodoList = ({ uuid }: { uuid: string }) => {
   const [input, setInput] = useState("")
@@ -68,8 +68,9 @@ const TodoList = ({ uuid }: { uuid: string }) => {
       return a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1
     }
     return a.Content.includes(': ') ? 1 : -1
-
   }
+
+  const detected: string[] = [];
 
   return (
     <>
@@ -103,18 +104,31 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
         <div>
           <ul>
-            {items.sort(sortFunction).map((item) => (
-              <li>
-                <ItemView item={item} deleteItem={deleteItem} switchItem={switchItem} />
-              </li>
-            ))}
+            {items.sort(sortFunction).map((item, index) => {
+              const res = detectRegex(item.Content);
+              if (res && !detected.includes(res)) {
+                detected.push(res)
+                return (
+                  <>
+                    {index > 0 && <hr className='my-4' />}
+                    <h3>{capitalizeFirstLetter(res)}</h3>
+                    <li>
+                      <ItemView item={item} deleteItem={deleteItem} switchItem={switchItem} />
+                    </li>
+                  </>
+                )
+              }
+
+              return (
+                <li>
+                  <ItemView item={item} deleteItem={deleteItem} switchItem={switchItem} />
+                </li>
+              )
+            })}
           </ul>
         </div>
 
       </div>
-      <ReactModal isOpen={!online} onRequestClose={() => setOnline(true)} contentLabel="Offline">
-        <p> ❌ Offline, changes are not synchronized</p>
-      </ReactModal>
     </>
   );
 };

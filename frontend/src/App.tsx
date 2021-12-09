@@ -55,24 +55,25 @@ const App = () => {
       <h1>TODO APP 📝</h1>
       <h2>Create a new todo list !</h2>
 
-      <label htmlFor="newTodoPrivate">Title </label>
-      <input
-        id="todoName"
-        name="todoName"
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            newTodo();
-          }
-        }}
-      />
-      <button className="m-2 p-2 rounded bg-purple-600" onClick={newTodo}>
-        Create
-      </button>
-      <br />
-
+      <div className="flex">
+        <input
+          id="todoName"
+          name="todoName"
+          placeholder="Title"
+          className="flex-1 my-2"
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              newTodo();
+            }
+          }}
+        />
+        <button className="m-2 p-2 rounded bg-purple-600" onClick={newTodo}>
+          Create
+        </button>
+      </div>
       <label htmlFor="newTodoPrivate">🔐 Secret list </label>
       <input type="checkbox" name="newTodoPrivate" id="newTodoPrivate" checked={newTodoPrivate} onClick={() => setNewTodoPrivate(!newTodoPrivate)} />
       <br />
