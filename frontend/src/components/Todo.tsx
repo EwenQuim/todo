@@ -63,6 +63,14 @@ const TodoList = ({ uuid }: { uuid: string }) => {
     tryToFetch('/api/todo/' + uuid + "/" + item.ID + "/delete", setOnline)
   }
 
+  const sortFunction = (a: Item, b: Item) => {
+    if (a.Content.includes(': ') == b.Content.includes(': ')) {
+      return a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1
+    }
+    return a.Content.includes(': ') ? 1 : -1
+
+  }
+
   return (
     <>
       <div className="todo-list">
@@ -91,7 +99,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
         <div>
           <ul>
-            {items.sort((a, b) => a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1).map((item) => (
+            {items.sort(sortFunction).map((item) => (
               <li>
                 <ItemView item={item} deleteItem={deleteItem} switchItem={switchItem} />
               </li>
