@@ -13,7 +13,7 @@ import (
 func list() func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 
-		todo := getTodo(URL)
+		todo := sortSpecial(getTodo(URL))
 
 		var list []string
 		var selectedBeforeChange []string
