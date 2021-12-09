@@ -68,7 +68,7 @@ const App = () => {
           }
         }}
       />
-      <button className="btn btn-primary" onClick={newTodo}>
+      <button className="m-2 p-2 rounded bg-purple-600" onClick={newTodo}>
         Create
       </button>
       <br />

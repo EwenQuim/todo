@@ -7,7 +7,7 @@ import { tryToFetch } from '../utils/utils';
 
 const TodoList = ({ uuid }: { uuid: string }) => {
   const [input, setInput] = useState("")
-  const [todo, setTodo] = useState<Todo>({ Title: "", UUID: "", Items: [], Public: false })
+  const [todo, setTodo] = useState<Todo>({ Title: "", UUID: "", Items: [], Public: true })
   const [items, setItems] = useState<Item[]>([])
 
   const [online, setOnline] = useState(true)
@@ -75,14 +75,18 @@ const TodoList = ({ uuid }: { uuid: string }) => {
     <>
       <div className="todo-list">
 
-        {!todo?.Items?.length && !todo?.Public &&
+        {!todo.Items?.length && !todo.Public &&
           <>⬆ <em> Bookmark this URL so you can find it later (only you will be able to access it !)</em></>
         }
 
-        <h1>{todo?.Title} {todo && !todo?.Public && "🔐"}</h1>
+        <h1>{todo.Title}</h1>
 
-        <div >
+        {todo.Title && !todo.Public && <> <em>Secret list</em> 🔐</>}
+
+        <div className="flex">
           <input
+            className="flex-1 my-2"
+            placeholder="Add an item"
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -92,8 +96,8 @@ const TodoList = ({ uuid }: { uuid: string }) => {
               }
             }}
           />
-          <button className="btn btn-primary" onClick={newItem}>
-            Add
+          <button className="m-2 p-2 rounded bg-purple-600 w-8" onClick={newItem}>
+            +
           </button>
         </div>
 
