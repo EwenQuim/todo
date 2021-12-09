@@ -5,13 +5,14 @@ import (
 
 	"github.com/EwenQuim/todo-app/app/model"
 	"github.com/EwenQuim/todo-app/app/query"
+	"github.com/EwenQuim/todo-app/app/validator"
 	"github.com/EwenQuim/todo-app/database"
 	"github.com/gofiber/fiber/v2"
 )
 
 func NewItem(c *fiber.Ctx, s database.Service) error {
 	newItem := model.Item{
-		Content:  c.Query("content"),
+		Content:  validator.CleanItem(c.Query("content"), s),
 		TodoUUID: c.Params("uuid"),
 	}
 

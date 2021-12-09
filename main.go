@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/EwenQuim/todo-app/app/controllers"
 	"github.com/EwenQuim/todo-app/database"
@@ -27,7 +28,7 @@ func main() {
 
 	dab := database.InitDatabase("todo.db")
 
-	s := database.Service{DB: dab}
+	s := database.Service{DB: dab, Regex: *regexp.MustCompile(`^ *([\w ]+) *: *(.*) *$`)}
 
 	app := fiber.New()
 

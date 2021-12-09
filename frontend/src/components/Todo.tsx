@@ -72,10 +72,10 @@ const TodoList = ({ uuid }: { uuid: string }) => {
   }
 
   const sortFunction = (a: Item, b: Item) => {
-    if (a.Content.includes(': ') == b.Content.includes(': ')) {
+    if (a.Content.includes(':') == b.Content.includes(':')) {
       return a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1
     }
-    return a.Content.includes(': ') ? 1 : -1
+    return a.Content.includes(':') ? 1 : -1
   }
 
   const detected: string[] = [];

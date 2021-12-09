@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"time"
 
 	"github.com/EwenQuim/todo-app/app/model"
@@ -13,7 +14,8 @@ import (
 )
 
 type Service struct {
-	DB *gorm.DB
+	DB    *gorm.DB
+	Regex regexp.Regexp
 }
 
 func InitDatabase(db_name string) *gorm.DB {
