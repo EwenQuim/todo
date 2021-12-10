@@ -85,6 +85,8 @@ const TodoList = ({ uuid }: { uuid: string }) => {
     <>
       <div className="todo-list">
 
+        {!online && <div className="fixed z-10 top-0 right-0 left-0 text-center bg-red-500 text-white">Offline</div>}
+
         {!todo.Items?.length && !todo.Public &&
           <>⬆ <em> Bookmark this URL so you can find it later (only you will be able to access it !)</em></>
         }
@@ -108,30 +110,27 @@ const TodoList = ({ uuid }: { uuid: string }) => {
               }
             }}
           />
-          <button className="my-2 ml-2 px-2 rounded bg-purple-600 w-8 text-white" onClick={newItem}>
+          <button className="my-2 ml-2 px-2 rounded bg-gray-300 dark:bg-gray-800/90 w-8 text-white" onClick={newItem}>
             +
           </button>
         </div>
 
         <div>
-          <ul>
-            {items.sort(sortFunction).map((item, index) => {
+          <ul className='relative'>
+            {items.sort(sortFunction).map((item) => {
               const res = detectRegex(item.Content).toLowerCase();
               if (res && !detected.includes(res)) {
                 detected.push(res)
                 return (
                   <>
-                    {index > 0 && <hr className='my-4' />}
-                    <div className='flex'>
-                      <h3 className='flex-1'>{capitalizeFirstLetter(res)} </h3>
-                      <button className="px-2 rounded bg-purple-600 w-8 text-white align-middle"
+                    <div className='flex sticky top-0 -mx-4 backdrop-blur-sm bg-gray-50/90 border-t border-gray-200'>
+                      <h3 className='flex-1 pl-6'>{capitalizeFirstLetter(res)} </h3>
+                      <button className="px-2 m-2 rounded bg-gray-300 w-8 text-white align-middle"
                         onClick={() => {
                           setInput(res.toLowerCase() + ": ")
                           searchInput.current?.focus()
                         }}>
-                        {/* <span className='inline-block align-text-middle'> */}
                         +
-                        {/* </span> */}
                       </button>
                     </div>
 

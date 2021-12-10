@@ -3,6 +3,7 @@
 export const tryToFetch = async (url: string, setOnline: any) => {
   try {
     await fetch(url)
+    setOnline(true)
   } catch {
     setOnline(false)
   }
