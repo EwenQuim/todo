@@ -46,7 +46,9 @@ func main() {
 	app.Use(filesystem.New(filesystem.Config{
 		Root:         http.FS(fsub),
 		NotFoundFile: "index.html",
+		MaxAge:       604800,
 	}))
+
 	app.Use(cors.New())
 	// app.Static("", "./frontend/build") // For not embedding the build folder
 	app.Use(logger.New())
