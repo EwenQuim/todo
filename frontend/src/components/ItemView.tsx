@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import { Item } from "../types"
 
-export const ItemView = ({ item, switchItem, deleteItem }: { item: Item, switchItem: any, deleteItem: any }) => {
+export const ItemView = ({ item, switchItem }: { item: Item, switchItem: any }) => {
 
   const stringTransform = (str: string) => {
     const res = str.match(/([\w ]+)?: *(.*)/)

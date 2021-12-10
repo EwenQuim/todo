@@ -1,8 +1,7 @@
 import './App.css';
 import './index.css'
 
-import React, { useEffect, useState } from 'react';
-
+import React from 'react';
 import TodoList from './components/Todo';
 import { Todos } from './components/Todos';
 

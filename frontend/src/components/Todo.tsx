@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { capitalizeFirstLetter, detectRegex, tryToFetch } from '../utils/utils';
 
 import { ItemView } from './ItemView';
-import ReactModal from 'react-modal';
 
 const TodoList = ({ uuid }: { uuid: string }) => {
   const [input, setInput] = useState("")
@@ -22,7 +21,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
           setItems(data.Items)
         }
       })
-  }, [])
+  }, [uuid])
 
   useEffect(() => {
     document.title = todo.Title
@@ -72,7 +71,10 @@ const TodoList = ({ uuid }: { uuid: string }) => {
   }
 
   const sortFunction = (a: Item, b: Item) => {
-    if (a.Content.includes(':') == b.Content.includes(':')) {
+    if (a.Content.includes(':') === b.Content.includes(':')) {
+      if (detectRegex(a.Content) === detectRegex(b.Content)) {
+        return a.ID > b.ID ? 1 : -1
+      }
       return a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1
     }
     return a.Content.includes(':') ? 1 : -1
@@ -110,7 +112,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
               }
             }}
           />
-          <button className="my-2 ml-2 px-2 rounded bg-gray-300 dark:bg-gray-800/90 w-8 text-white" onClick={newItem}>
+          <button className="my-2 ml-2 px-2 rounded w-8 text-white" onClick={newItem}>
             +
           </button>
         </div>
@@ -123,9 +125,9 @@ const TodoList = ({ uuid }: { uuid: string }) => {
                 detected.push(res)
                 return (
                   <>
-                    <div className='flex sticky top-0 -mx-4 backdrop-blur-sm bg-gray-50/90 border-t border-gray-200'>
+                    <div className='flex sticky top-0 -mx-4 backdrop-blur-sm bg-gray-50/90 dark:bg-gray-800/90 border-t border-gray-200'>
                       <h3 className='flex-1 pl-6'>{capitalizeFirstLetter(res)} </h3>
-                      <button className="px-2 m-2 rounded bg-gray-300 w-8 text-white align-middle"
+                      <button className="px-2 m-2 mr-6 rounded w-8 text-white align-middle"
                         onClick={() => {
                           setInput(res.toLowerCase() + ": ")
                           searchInput.current?.focus()
@@ -135,7 +137,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
                     </div>
 
                     <li>
-                      <ItemView item={item} deleteItem={deleteItem} switchItem={switchItem} />
+                      <ItemView item={item} switchItem={switchItem} />
                     </li>
                   </>
                 )
@@ -143,7 +145,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
               return (
                 <li>
-                  <ItemView item={item} deleteItem={deleteItem} switchItem={switchItem} />
+                  <ItemView item={item} switchItem={switchItem} />
                 </li>
               )
             })}
