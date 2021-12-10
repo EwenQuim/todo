@@ -33,12 +33,19 @@ func GetTodo(c *fiber.Ctx, s database.Service) error {
 		return c.Status(404).SendString(fmt.Sprintf("Error: %s", err.Error()))
 	}
 
-	items, err := query.GetItemsForList(s, uuid)
+	todo.Items, err = query.GetItemsForList(s, uuid)
 	if err != nil {
 		return c.Status(500).SendString(fmt.Sprintf("Error: %s", err.Error()))
 	}
 
-	todo.Items = items
+	todo.Groups = make(map[string][]model.Item)
+	for _, item := range todo.Items {
+		group, _ := validator.GetGroupAndContent(item.Content)
+		if len(todo.Groups[group]) == 0 {
+			todo.Groups[group] = []model.Item{}
+		}
+		todo.Groups[group] = append(todo.Groups[group], item)
+	}
 
 	return c.JSON(todo)
 }

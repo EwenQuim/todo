@@ -20,3 +20,13 @@ func CleanItem(str string) string {
 
 	return strings.TrimSpace(str)
 }
+
+func GetGroupAndContent(str string) (string, string) {
+	splitted := strings.SplitN(str, ":", 2)
+
+	if len(splitted) == 2 {
+		return strings.ToLower(strings.TrimSpace(splitted[0])), strings.TrimSpace(splitted[1])
+	}
+
+	return "", strings.TrimSpace(str)
+}
