@@ -55,7 +55,7 @@ export const Todos = () => {
             }
           }}
         />
-        <button className="m-2 p-2 rounded bg-purple-600" onClick={newTodo}>
+        <button className="m-2 p-2 rounded bg-purple-600 text-white" onClick={newTodo}>
           Create
         </button>
       </div>
