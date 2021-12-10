@@ -125,7 +125,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
                 detected.push(res)
                 return (
                   <>
-                    <div className='flex sticky top-0 -mx-4 backdrop-blur-sm bg-gray-50/90 dark:bg-gray-800/90 border-t border-gray-200'>
+                    <div className='flex sticky top-0 mt-6 -mx-4 backdrop-blur-sm bg-gray-50/90 dark:bg-gray-800/90 border-t border-gray-200'>
                       <h3 className='flex-1 pl-6'>{capitalizeFirstLetter(res)} </h3>
                       <button className="px-2 m-2 mr-6 rounded w-8 text-white align-middle"
                         onClick={() => {
