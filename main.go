@@ -6,10 +6,12 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/EwenQuim/todo-app/app/controllers"
 	"github.com/EwenQuim/todo-app/database"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -33,6 +35,13 @@ func main() {
 	app := fiber.New()
 
 	controllers.RegisterRoutes(app, s)
+
+	app.Use(compress.New(compress.Config{
+		Next: func(c *fiber.Ctx) bool {
+			return !strings.HasPrefix(c.Path(), "/static")
+		},
+		Level: compress.LevelBestSpeed,
+	}))
 
 	app.Use(filesystem.New(filesystem.Config{
 		Root:         http.FS(fsub),
