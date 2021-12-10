@@ -3,7 +3,6 @@ package validator
 import (
 	"strings"
 
-	"github.com/EwenQuim/todo-app/database"
 	"github.com/google/uuid"
 )
 
@@ -12,12 +11,12 @@ func UUID(u string) bool {
 	return err == nil
 }
 
-func CleanItem(str string, s database.Service) string {
-	r := s.Regex.FindStringSubmatch(str)
+func CleanItem(str string) string {
+	splitted := strings.SplitN(str, ":", 2)
 
-	if len(r) >= 2 {
-		return strings.TrimSpace(r[1]) + ": " + strings.TrimSpace(r[2])
+	if len(splitted) == 2 {
+		return strings.ToLower(strings.TrimSpace(splitted[0])) + ": " + strings.TrimSpace(splitted[1])
 	}
-	return str
 
+	return strings.TrimSpace(str)
 }

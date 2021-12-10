@@ -12,7 +12,7 @@ import (
 
 func NewItem(c *fiber.Ctx, s database.Service) error {
 	newItem := model.Item{
-		Content:  validator.CleanItem(c.Query("content"), s),
+		Content:  validator.CleanItem(c.Query("content")),
 		TodoUUID: c.Params("uuid"),
 	}
 

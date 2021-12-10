@@ -1,5 +1,5 @@
 import { Item, Todo } from '../types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { capitalizeFirstLetter, detectRegex, tryToFetch } from '../utils/utils';
 
 import { ItemView } from './ItemView';
@@ -78,7 +78,8 @@ const TodoList = ({ uuid }: { uuid: string }) => {
     return a.Content.includes(':') ? 1 : -1
   }
 
-  const detected: string[] = [];
+  const detected: string[] = []
+  const searchInput = useRef<HTMLInputElement>(null)
 
   return (
     <>
@@ -94,6 +95,8 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
         <div className="flex">
           <input
+            ref={searchInput}
+            autoFocus={true}
             className="flex-1 my-2"
             placeholder="Add an item"
             type="text"
@@ -105,7 +108,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
               }
             }}
           />
-          <button className="m-2 p-2 rounded bg-purple-600 w-8" onClick={newItem}>
+          <button className="my-2 ml-2 px-2 rounded bg-purple-600 w-8 text-white" onClick={newItem}>
             +
           </button>
         </div>
@@ -113,13 +116,25 @@ const TodoList = ({ uuid }: { uuid: string }) => {
         <div>
           <ul>
             {items.sort(sortFunction).map((item, index) => {
-              const res = detectRegex(item.Content);
+              const res = detectRegex(item.Content).toLowerCase();
               if (res && !detected.includes(res)) {
                 detected.push(res)
                 return (
                   <>
                     {index > 0 && <hr className='my-4' />}
-                    <h3>{capitalizeFirstLetter(res)}</h3>
+                    <div className='flex'>
+                      <h3 className='flex-1'>{capitalizeFirstLetter(res)} </h3>
+                      <button className="px-2 rounded bg-purple-600 w-8 text-white align-middle"
+                        onClick={() => {
+                          setInput(res.toLowerCase() + ": ")
+                          searchInput.current?.focus()
+                        }}>
+                        {/* <span className='inline-block align-text-middle'> */}
+                        +
+                        {/* </span> */}
+                      </button>
+                    </div>
+
                     <li>
                       <ItemView item={item} deleteItem={deleteItem} switchItem={switchItem} />
                     </li>
@@ -136,18 +151,14 @@ const TodoList = ({ uuid }: { uuid: string }) => {
           </ul>
         </div>
 
-        <div className='flex items-center my-6'>
-          <span className='flex-1'> Clean up (✅ ➡ 🗑)</span>
-          <button className="m-2 p-1 rounded w-8 h-8" onClick={deleteItems}>
-            🧹
-          </button>
-        </div>
+        <button className="my-6 px-4 rounded" onClick={deleteItems}>
+          🧹 Clean up
+        </button>
+
 
       </div>
     </>
   );
 };
-
-
 
 export default TodoList;

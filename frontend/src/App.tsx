@@ -3,7 +3,6 @@ import './index.css'
 
 import React, { useEffect, useState } from 'react';
 
-import { Todo } from './types';
 import TodoList from './components/Todo';
 import { Todos } from './components/Todos';
 
@@ -17,7 +16,7 @@ const App = () => {
     if (regex.test(path)) {
       return <TodoList uuid={path} />
     } else {
-      return <div>404</div>
+      return <div><h1>404</h1><p>Cette liste n'existe pas</p></div>
     }
   }
 
