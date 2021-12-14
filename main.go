@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"flag"
 	"io/fs"
 	"log"
 	"net/http"
@@ -23,12 +24,18 @@ import (
 var reactBuild embed.FS
 
 func main() {
+
+	// Custom path to db
+	var dbPath string
+	flag.StringVar(&dbPath, "db", "todo.db", "path to database")
+	flag.Parse()
+
 	fsub, err := fs.Sub(reactBuild, "frontend/build")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dab := database.InitDatabase("todo.db")
+	dab := database.InitDatabase(dbPath)
 
 	s := database.Service{DB: dab, Regex: *regexp.MustCompile(`^ *([\w ]+) *: *(.*) *$`)}
 
