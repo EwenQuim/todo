@@ -4,7 +4,8 @@ go 1.17
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.2
-	github.com/gofiber/fiber/v2 v2.23.0
+	github.com/go-chi/chi/v5 v5.0.7
+	github.com/go-chi/cors v1.2.0
 	github.com/urfave/cli/v2 v2.3.0
 )
 
@@ -24,12 +25,7 @@ require (
 )
 
 require (
-	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/google/uuid v1.3.0
-	github.com/klauspost/compress v1.13.6 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.31.0 // indirect
-	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
 	gorm.io/driver/sqlite v1.2.6
 	gorm.io/gorm v1.22.4

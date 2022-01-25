@@ -1,39 +1,44 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/EwenQuim/todo-app/app/model"
 	"github.com/EwenQuim/todo-app/app/query"
 	"github.com/EwenQuim/todo-app/app/validator"
-	"github.com/EwenQuim/todo-app/database"
-	"github.com/gofiber/fiber/v2"
+	"github.com/go-chi/chi/v5"
 )
 
-func GetAllTodos(c *fiber.Ctx, s database.Service) error {
-	todos, err := query.GetAllTodos(s)
+func (rs TodoResources) GetAllTodos(w http.ResponseWriter, r *http.Request) {
+	todos, err := query.GetAllTodos(rs.Service)
 	if err != nil {
-		return c.Status(404).SendString(fmt.Sprintf("Error: %s", err.Error()))
+		fmt.Println(err)
+		w.Write([]byte(err.Error()))
+		return
 	}
-
-	return c.JSON(todos)
+	json.NewEncoder(w).Encode(todos)
 }
 
-func GetTodo(c *fiber.Ctx, s database.Service) error {
-	uuid := c.Params("uuid")
+func (rs TodoResources) GetTodo(w http.ResponseWriter, r *http.Request) {
+	uuid := chi.URLParam(r, "uuid")
 
 	if !validator.UUID(uuid) {
-		return c.Status(404).SendString(fmt.Sprintf("Error: %s", "Invalid UUID"))
+		http.Error(w, "Invalid UUID", http.StatusBadRequest)
+		return
 	}
 
-	todo, err := query.GetTodo(s, uuid)
+	todo, err := query.GetTodo(rs.Service, uuid)
 	if err != nil {
-		return c.Status(404).SendString(fmt.Sprintf("Error: %s", err.Error()))
+		http.Error(w, "Error:"+err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	todo.Items, err = query.GetItemsForList(s, uuid)
+	todo.Items, err = query.GetItemsForList(rs.Service, uuid)
 	if err != nil {
-		return c.Status(500).SendString(fmt.Sprintf("Error: %s", err.Error()))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	todo.Groups = make(map[string][]model.Item)
@@ -45,30 +50,31 @@ func GetTodo(c *fiber.Ctx, s database.Service) error {
 		todo.Groups[group] = append(todo.Groups[group], item)
 	}
 
-	return c.JSON(todo)
+	json.NewEncoder(w).Encode(todo)
 }
 
-func NewTodo(c *fiber.Ctx, s database.Service) error {
+func (rs TodoResources) NewTodo(w http.ResponseWriter, r *http.Request) {
 	newTodo := model.Todo{
-		Title:  c.Query("title"),
-		Public: c.Query("public") == "true",
+		Title:  r.URL.Query().Get("title"),
+		Public: r.URL.Query().Get("public") == "true",
 	}
 
-	newTodo, err := query.NewTodo(s, newTodo)
+	newTodo, err := query.NewTodo(rs.Service, newTodo)
 	if err != nil {
-		fmt.Println(err)
-		return c.Status(409).JSON(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	return c.Status(201).JSON(newTodo)
+	json.NewEncoder(w).Encode(newTodo)
 }
 
-func DeleteTodo(c *fiber.Ctx, s database.Service) error {
-	err := query.DeteleTodo(s, c.Params("uuid"))
+func (rs TodoResources) DeleteTodo(w http.ResponseWriter, r *http.Request) {
+	err := query.DeleteTodo(rs.Service, chi.URLParam(r, "uuid"))
 	if err != nil {
 		fmt.Println(err)
-		return c.SendStatus(500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	return c.SendStatus(201)
+	w.Write([]byte("Todo deleted"))
 }

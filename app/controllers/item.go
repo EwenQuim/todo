@@ -1,46 +1,46 @@
 package controllers
 
 import (
-	"fmt"
+	"encoding/json"
+	"net/http"
 
 	"github.com/EwenQuim/todo-app/app/model"
 	"github.com/EwenQuim/todo-app/app/query"
 	"github.com/EwenQuim/todo-app/app/validator"
-	"github.com/EwenQuim/todo-app/database"
-	"github.com/gofiber/fiber/v2"
+	"github.com/go-chi/chi/v5"
 )
 
-func NewItem(c *fiber.Ctx, s database.Service) error {
+func (rs TodoResources) NewItem(w http.ResponseWriter, r *http.Request) {
 	newItem := model.Item{
-		Content:  validator.CleanItem(c.Query("content")),
-		TodoUUID: c.Params("uuid"),
+		Content:  validator.CleanItem(r.URL.Query().Get("content")), // c.Query("content")),
+		TodoUUID: chi.URLParam(r, "uuid"),                           // c.Params("uuid"),
 	}
 
-	newItem, err := query.NewItem(s, newItem)
+	newItem, err := query.NewItem(rs.Service, newItem)
 	if err != nil {
-		fmt.Println(err)
-		return c.SendStatus(409)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-
-	return c.Status(201).JSON(newItem)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(newItem)
 }
 
-func DeleteItem(c *fiber.Ctx, s database.Service) error {
-	err := query.DeleteItem(s, c.Params("itemid"))
+func (rs TodoResources) DeleteItem(w http.ResponseWriter, r *http.Request) {
+	err := query.DeleteItem(rs.Service, chi.URLParam(r, "itemid")) // c.Params("itemid"))
 	if err != nil {
-		fmt.Println(err)
-		return c.SendStatus(500)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	return c.SendStatus(201)
+	w.WriteHeader(http.StatusNoContent)
 }
 
-func SwitchItem(c *fiber.Ctx, s database.Service) error {
-	err := query.SwitchItem(s, c.Params("itemid"))
+func (rs TodoResources) SwitchItem(w http.ResponseWriter, r *http.Request) {
+	err := query.SwitchItem(rs.Service, chi.URLParam(r, "itemid")) // c.Params("itemid"))
 	if err != nil {
-		fmt.Println(err)
-		return c.Status(500).JSON(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	return c.SendStatus(201)
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -3,19 +3,17 @@ package main
 import (
 	"embed"
 	"flag"
+	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
 	"regexp"
-	"strings"
 
 	"github.com/EwenQuim/todo-app/app/controllers"
 	"github.com/EwenQuim/todo-app/database"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	chicors "github.com/go-chi/cors"
 )
 
 //go:generate yarn --cwd frontend build
@@ -24,7 +22,6 @@ import (
 var reactBuild embed.FS
 
 func main() {
-
 	// Custom path to db
 	var dbPath string
 	flag.StringVar(&dbPath, "db", "todo.db", "path to database")
@@ -35,30 +32,29 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dab := database.InitDatabase(dbPath)
+	s := database.Service{
+		DB:    database.InitDatabase(dbPath),
+		Regex: *regexp.MustCompile(`^ *([\w ]+) *: *(.*) *$`),
+	}
+	r := chi.NewRouter()
 
-	s := database.Service{DB: dab, Regex: *regexp.MustCompile(`^ *([\w ]+) *: *(.*) *$`)}
+	// Middleware stack
+	r.Use(middleware.Compress(5, "text/html", "text/css"))
 
-	app := fiber.New()
-
-	controllers.RegisterRoutes(app, s)
-
-	app.Use(compress.New(compress.Config{
-		Next: func(c *fiber.Ctx) bool {
-			return !strings.HasPrefix(c.Path(), "/static")
-		},
-		Level: compress.LevelBestSpeed,
+	r.Use(chicors.Handler(chicors.Options{
+		AllowedOrigins: []string{"*"},
 	}))
+	r.Use(middleware.Logger)
 
-	app.Use(filesystem.New(filesystem.Config{
-		Root:         http.FS(fsub),
-		NotFoundFile: "index.html",
-		MaxAge:       604800,
-	}))
+	// Routes
+	r.Get("/yo-{test}", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("yo" + chi.URLParam(r, "test")))
+	})
 
-	app.Use(cors.New())
-	// app.Static("", "./frontend/build") // For not embedding the build folder
-	app.Use(logger.New())
+	res := controllers.TodoResources{Service: s}
+	res.RegisterRoutes(r)
+	r.Handle("/*", http.FileServer(http.FS(fsub)))
 
-	log.Fatal(app.Listen(":8083"))
+	fmt.Println("server started at :8084")
+	http.ListenAndServe(":8084", r)
 }

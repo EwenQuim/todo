@@ -26,6 +26,6 @@ func GetAllTodos(s database.Service) ([]model.Todo, error) {
 	return todos, err
 }
 
-func DeteleTodo(s database.Service, uuid string) error {
+func DeleteTodo(s database.Service, uuid string) error {
 	return s.DB.Delete(&model.Todo{}, "uuid = ?", uuid).Error
 }

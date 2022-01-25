@@ -1,34 +1,42 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/EwenQuim/todo-app/database"
-	"github.com/gofiber/fiber/v2"
+	"github.com/go-chi/chi/v5"
 )
 
-func RegisterRoutes(app *fiber.App, s database.Service) {
-	api := app.Group("/api")
-
-	// Todo
-	api.Get("/todo/new", wrapService(s, NewTodo))
-	api.Get("/todo", wrapService(s, GetAllTodos))
-	api.Get("/todo/:uuid", wrapService(s, GetTodo))
-	api.Get("/todo/:uuid/delete", wrapService(s, DeleteTodo))
-
-	// Items
-	api.Get("/todo/:uuid/new", wrapService(s, NewItem))
-	api.Get("/todo/:uuid/:itemid/delete", wrapService(s, DeleteItem))
-	api.Get("/todo/:uuid/:itemid/switch", wrapService(s, SwitchItem))
-
-	// Other
-	api.Get("/ping", wrapService(s, ping))
+type TodoResources struct {
+	database.Service
 }
 
-func wrapService(s database.Service, f func(c *fiber.Ctx, s database.Service) error) func(c *fiber.Ctx) error {
-	return func(c *fiber.Ctx) error {
-		return f(c, s)
-	}
+func (rs TodoResources) RegisterRoutes(r *chi.Mux) {
+	apiRouter := chi.NewRouter()
+	apiRouter.Use(jsonApi)
+
+	apiRouter.Get("/todo/new", rs.NewTodo)
+	apiRouter.Get("/todo", rs.GetAllTodos)
+	apiRouter.Get("/todo/{uuid}", rs.GetTodo)
+	apiRouter.Get("/todo/{uuid}/delete", rs.DeleteTodo)
+
+	apiRouter.Get("/todo/{uuid}/new", rs.NewItem)
+	apiRouter.Get("/todo/{uuid}/delete/{itemid}", rs.DeleteItem)
+	apiRouter.Get("/todo/{uuid}/switch/{itemid}", rs.SwitchItem)
+
+	apiRouter.Get("/ping", ping)
+
+	r.Mount("/api", apiRouter)
 }
 
-func ping(c *fiber.Ctx, s database.Service) error {
-	return c.SendString("pong")
+// jsonApi applies the content-type header to all responses of the api as json
+func jsonApi(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		h.ServeHTTP(w, r)
+	})
+}
+
+func ping(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("pong"))
 }
