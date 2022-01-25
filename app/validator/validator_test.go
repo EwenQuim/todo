@@ -6,7 +6,6 @@ import (
 )
 
 func TestCleanItem(t *testing.T) {
-
 	testCases := []struct {
 		input    string
 		expected string
@@ -30,7 +29,6 @@ func TestCleanItem(t *testing.T) {
 }
 
 func TestGetGroupAndContent(t *testing.T) {
-
 	testCases := []struct {
 		input           string
 		expectedGroup   string

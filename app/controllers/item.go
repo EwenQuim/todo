@@ -26,7 +26,6 @@ func NewItem(c *fiber.Ctx, s database.Service) error {
 }
 
 func DeleteItem(c *fiber.Ctx, s database.Service) error {
-
 	err := query.DeleteItem(s, c.Params("itemid"))
 	if err != nil {
 		fmt.Println(err)
@@ -37,7 +36,6 @@ func DeleteItem(c *fiber.Ctx, s database.Service) error {
 }
 
 func SwitchItem(c *fiber.Ctx, s database.Service) error {
-
 	err := query.SwitchItem(s, c.Params("itemid"))
 	if err != nil {
 		fmt.Println(err)

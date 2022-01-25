@@ -6,7 +6,6 @@ import (
 )
 
 func RegisterRoutes(app *fiber.App, s database.Service) {
-
 	api := app.Group("/api")
 
 	// Todo
@@ -22,7 +21,6 @@ func RegisterRoutes(app *fiber.App, s database.Service) {
 
 	// Other
 	api.Get("/ping", wrapService(s, ping))
-
 }
 
 func wrapService(s database.Service, f func(c *fiber.Ctx, s database.Service) error) func(c *fiber.Ctx) error {

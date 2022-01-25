@@ -21,7 +21,6 @@ type localItem struct {
 const URL = "https://todo.quimerch.com/api/todo/435ebc21-d12a-4979-a988-48143e31fca6"
 
 func main() {
-
 	app := &cli.App{
 		Name:        "todo",
 		Usage:       "A simple CLI program to manage your tasks",
@@ -53,5 +52,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }

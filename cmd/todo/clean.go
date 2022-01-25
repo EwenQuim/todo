@@ -11,7 +11,6 @@ import (
 
 func clean() func(c *cli.Context) error {
 	return func(c *cli.Context) error {
-
 		fmt.Println("Cleaning up todo list")
 		todo := getTodo(URL)
 
@@ -26,10 +25,8 @@ func clean() func(c *cli.Context) error {
 					if err != nil {
 						fmt.Println(err)
 					}
-
 				}(task)
 			}
-
 		}
 		wg.Wait()
 		fmt.Println("Done")

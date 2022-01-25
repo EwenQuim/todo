@@ -19,7 +19,6 @@ type Service struct {
 }
 
 func InitDatabase(db_name string) *gorm.DB {
-
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{

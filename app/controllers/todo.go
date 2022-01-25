@@ -11,7 +11,6 @@ import (
 )
 
 func GetAllTodos(c *fiber.Ctx, s database.Service) error {
-
 	todos, err := query.GetAllTodos(s)
 	if err != nil {
 		return c.Status(404).SendString(fmt.Sprintf("Error: %s", err.Error()))
@@ -21,7 +20,6 @@ func GetAllTodos(c *fiber.Ctx, s database.Service) error {
 }
 
 func GetTodo(c *fiber.Ctx, s database.Service) error {
-
 	uuid := c.Params("uuid")
 
 	if !validator.UUID(uuid) {
@@ -66,7 +64,6 @@ func NewTodo(c *fiber.Ctx, s database.Service) error {
 }
 
 func DeleteTodo(c *fiber.Ctx, s database.Service) error {
-
 	err := query.DeteleTodo(s, c.Params("uuid"))
 	if err != nil {
 		fmt.Println(err)

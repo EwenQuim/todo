@@ -12,7 +12,6 @@ import (
 
 func list() func(c *cli.Context) error {
 	return func(c *cli.Context) error {
-
 		todo := sortSpecial(getTodo(URL))
 
 		var list []string
@@ -26,9 +25,10 @@ func list() func(c *cli.Context) error {
 		}
 
 		p := &survey.MultiSelect{
-			Message: "TODO: " + todo.Title,
-			Options: list,
-			Default: selectedBeforeChange,
+			Message:  "TODO: " + todo.Title,
+			Options:  list,
+			Default:  selectedBeforeChange,
+			PageSize: 15,
 		}
 
 		// answers := struct {
