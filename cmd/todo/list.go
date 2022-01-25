@@ -49,7 +49,7 @@ func list() func(c *cli.Context) error {
 				wg.Add(1)
 				go func(t localItem) {
 					defer wg.Done()
-					_, err := http.Get(URL + "/" + strconv.Itoa(int(t.ID)) + "/switch")
+					_, err := http.Get(URL + "/switch/" + strconv.Itoa(int(t.ID)))
 					if err != nil {
 						fmt.Println(err)
 					}

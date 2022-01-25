@@ -54,12 +54,12 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
   const switchItem = async (item: Item) => {
     setItems(items => items.map(i => i.ID === item.ID ? { ...i, Done: !i.Done } : i))
-    tryToFetch('/api/todo/' + uuid + "/" + item.ID + "/switch", setOnline)
+    tryToFetch('/api/todo/' + uuid + "/switch/" + item.ID, setOnline)
   }
 
   const deleteItem = (item: Item) => {
     setItems(items => items.filter(i => i.ID !== item.ID))
-    tryToFetch('/api/todo/' + uuid + "/" + item.ID + "/delete", setOnline)
+    tryToFetch('/api/todo/' + uuid + "/delete/" + item.ID, setOnline)
   }
 
   const deleteItems = () => {

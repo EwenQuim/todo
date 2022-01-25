@@ -21,7 +21,7 @@ func clean() func(c *cli.Context) error {
 				go func(task localItem) {
 					defer wg.Done()
 
-					_, err := http.Get(URL + "/" + strconv.Itoa(int(task.ID)) + "/delete")
+					_, err := http.Get(URL + "/delete/" + strconv.Itoa(int(task.ID)))
 					if err != nil {
 						fmt.Println(err)
 					}

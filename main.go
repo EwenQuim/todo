@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 
 	"github.com/EwenQuim/todo-app/app/controllers"
@@ -47,14 +48,23 @@ func main() {
 	r.Use(middleware.Logger)
 
 	// Routes
-	r.Get("/yo-{test}", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("yo" + chi.URLParam(r, "test")))
-	})
-
 	res := controllers.TodoResources{Service: s}
 	res.RegisterRoutes(r)
-	r.Handle("/*", http.FileServer(http.FS(fsub)))
+
+	r.Handle("/*", http.FileServer(spaFileSystem{http.FS(fsub)}))
 
 	fmt.Println("server started at :8084")
 	http.ListenAndServe(":8084", r)
+}
+
+type spaFileSystem struct {
+	root http.FileSystem
+}
+
+func (fs spaFileSystem) Open(name string) (http.File, error) {
+	f, err := fs.root.Open(name)
+	if os.IsNotExist(err) {
+		return fs.root.Open("index.html")
+	}
+	return f, err
 }
