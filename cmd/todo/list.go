@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"sync"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -49,7 +48,7 @@ func list() func(c *cli.Context) error {
 				wg.Add(1)
 				go func(t localItem) {
 					defer wg.Done()
-					_, err := http.Get(URL + "/switch/" + strconv.Itoa(int(t.ID)))
+					_, err := http.Get(URL + "/switch/" + string(t.ID))
 					if err != nil {
 						fmt.Println(err)
 					}

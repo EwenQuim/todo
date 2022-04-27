@@ -6,6 +6,7 @@ import (
 )
 
 func NewItem(s database.Service, item model.Item) (model.Item, error) {
+	item.ID = model.NewUUID()
 	err := s.DB.Create(&item).Error
 	return item, err
 }
