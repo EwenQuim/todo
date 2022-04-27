@@ -24,16 +24,18 @@ export const ItemView = ({
   };
 
   return (
-    <div className="m-2 flex items-center">
-      <input
-        className="flex-none mr-2"
-        type="checkbox"
-        name="toggle-item"
-        id={`item-${item.ID}`}
-        onClick={async () => switchItem(item)}
-        checked={item.Done}
-      />
-      <label className="flex-1 mt-0 bg-white" htmlFor={`item-${item.ID}`}>
+    <div className="mx-2 flex items-center">
+      <label className="pl-2 pr-4 py-1 my-auto" htmlFor={`item-${item.ID}`}>
+        <input
+          className="flex-none"
+          type="checkbox"
+          name="toggle-item"
+          id={`item-${item.ID}`}
+          onClick={async () => switchItem(item)}
+          checked={item.Done}
+        />
+      </label>
+      <div className="flex-1 mt-0 bg-white">
         {item.Done ? (
           <s>{stringTransform(text)}</s>
         ) : (
@@ -41,7 +43,7 @@ export const ItemView = ({
             type="text"
             name=""
             id=""
-            className="bg-white border-none"
+            className="bg-white border-none w-full"
             value={stringTransform(text)}
             onChange={(e) => {
               setText(e.target.value);
@@ -49,7 +51,7 @@ export const ItemView = ({
             }}
           />
         )}
-      </label>
+      </div>
     </div>
   );
 };
