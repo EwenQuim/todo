@@ -20,6 +20,18 @@ func DeleteItem(s database.Service, id string) error {
 	return s.DB.Delete(&model.Item{}, "id = ?", id).Error
 }
 
+func ChangeItem(s database.Service, id, newContent string) error {
+	itemToEdit := model.Item{}
+	err := s.DB.Find(&itemToEdit, "id = ?", id).Error //.Update("done", true)
+	if err != nil {
+		return err
+	}
+
+	itemToEdit.Content = newContent
+
+	return s.DB.Save(&itemToEdit).Error
+}
+
 func SwitchItem(s database.Service, id string) error {
 	itemToEdit := model.Item{}
 	err := s.DB.Find(&itemToEdit, "id = ?", id).Error //.Update("done", true)

@@ -35,6 +35,16 @@ func (rs TodoResources) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func (rs TodoResources) ChangeItem(w http.ResponseWriter, r *http.Request) {
+	err := query.ChangeItem(rs.Service, chi.URLParam(r, "itemid"), r.FormValue("new_content")) // c.Params("itemid"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func (rs TodoResources) SwitchItem(w http.ResponseWriter, r *http.Request) {
 	err := query.SwitchItem(rs.Service, chi.URLParam(r, "itemid")) // c.Params("itemid"))
 	if err != nil {
