@@ -25,6 +25,10 @@ func (rs TodoResources) RegisterRoutes(r *chi.Mux) {
 	apiRouter.Get("/todo/{uuid}/switch/{itemid}", rs.SwitchItem)
 	apiRouter.Get("/todo/{uuid}/change/{itemid}", rs.ChangeItem)
 
+	apiRouter.Get("/item/{itemid}/delete", rs.DeleteItem)
+	apiRouter.Get("/item/{itemid}/switch", rs.SwitchItem)
+	apiRouter.Get("/item/{itemid}/change", rs.ChangeItem)
+
 	apiRouter.Get("/ping", ping)
 
 	r.Mount("/api", apiRouter)
