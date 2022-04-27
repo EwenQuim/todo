@@ -1,33 +1,35 @@
-import { Item, Todo } from '../types';
-import React, { useEffect, useRef, useState } from 'react';
-import { capitalizeFirstLetter, detectRegex, tryToFetch } from '../utils/utils';
-
-import { ItemView } from './ItemView';
+import React, { useEffect, useRef, useState } from "react";
+import { Item, Todo } from "../types";
+import { capitalizeFirstLetter, detectRegex, tryToFetch } from "../utils/utils";
+import { ItemView } from "./ItemView";
 
 const TodoList = ({ uuid }: { uuid: string }) => {
-  const [input, setInput] = useState("")
-  const [todo, setTodo] = useState<Todo>({ Title: "", UUID: "", Items: [], Public: true })
-  const [items, setItems] = useState<Item[]>([])
+  const [input, setInput] = useState("");
+  const [todo, setTodo] = useState<Todo>({
+    Title: "",
+    UUID: "",
+    Items: [],
+    Public: true,
+  });
+  const [items, setItems] = useState<Item[]>([]);
 
-  const [online, setOnline] = useState(true)
+  const [online, setOnline] = useState(true);
 
   useEffect(() => {
-    fetch('/api/todo/' + uuid)
-      .then(response => response.json())
-      .then(data => {
-        setTodo(data)
-        console.log("set items", data.Items)
+    fetch("/api/todo/" + uuid)
+      .then((response) => response.json())
+      .then((data) => {
+        setTodo(data);
+        console.log("set items", data.Items);
         if (data?.Items) {
-          setItems(data.Items)
+          setItems(data.Items);
         }
-      })
-  }, [uuid])
+      });
+  }, [uuid]);
 
   useEffect(() => {
-    document.title = todo.Title
-  }, [todo.Title])
-
-
+    document.title = todo.Title;
+  }, [todo.Title]);
 
   const newItem = async () => {
     if (input !== "") {
@@ -35,67 +37,100 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
       // Change locally (for an impression of speed)
       // Create if empty
-      setItems([...items, {
-        ID: -1,
-        Content: input,
-        Done: false
-      }])
+      setItems([
+        ...items,
+        {
+          ID: -1,
+          Content: input,
+          Done: false,
+        },
+      ]);
 
       // Then, try to sync with the server
       try {
-        const response = await fetch('/api/todo/' + uuid + "/new?content=" + input)
-        const responseJson = await response.json()
-        setItems(items => items.map(item => item.ID === -1 ? { ...item, ID: responseJson.ID } : item))
+        const response = await fetch(
+          "/api/todo/" + uuid + "/new?content=" + input
+        );
+        const responseJson = await response.json();
+        setItems((items) =>
+          items.map((item) =>
+            item.ID === -1 ? { ...item, ID: responseJson.ID } : item
+          )
+        );
       } catch {
-        setOnline(false)
+        setOnline(false);
       }
     }
   };
 
   const switchItem = async (item: Item) => {
-    setItems(items => items.map(i => i.ID === item.ID ? { ...i, Done: !i.Done } : i))
-    tryToFetch('/api/todo/' + uuid + "/switch/" + item.ID, setOnline)
-  }
+    setItems((items) =>
+      items.map((i) => (i.ID === item.ID ? { ...i, Done: !i.Done } : i))
+    );
+    tryToFetch("/api/todo/" + uuid + "/switch/" + item.ID, setOnline);
+  };
+
+  const changeItem = async (item: Item) => {
+    setItems((items) =>
+      items.map((i) => (i.ID === item.ID ? { ...i, Done: !i.Done } : i))
+    );
+    tryToFetch("/api/todo/" + uuid + "/switch/" + item.ID, setOnline);
+  };
 
   const deleteItem = (item: Item) => {
-    setItems(items => items.filter(i => i.ID !== item.ID))
-    tryToFetch('/api/todo/' + uuid + "/delete/" + item.ID, setOnline)
-  }
+    setItems((items) => items.filter((i) => i.ID !== item.ID));
+    tryToFetch("/api/todo/" + uuid + "/delete/" + item.ID, setOnline);
+  };
 
   const deleteItems = () => {
     for (let item of items) {
       if (item.Done) {
-        deleteItem(item)
+        deleteItem(item);
       }
     }
-  }
+  };
 
   const sortFunction = (a: Item, b: Item) => {
-    if (a.Content.includes(':') === b.Content.includes(':')) {
+    if (a.Content.includes(":") === b.Content.includes(":")) {
       if (detectRegex(a.Content) === detectRegex(b.Content)) {
-        return a.ID > b.ID ? 1 : -1
+        return a.ID > b.ID ? 1 : -1;
       }
-      return a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1
+      return a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1;
     }
-    return a.Content.includes(':') ? 1 : -1
-  }
+    return a.Content.includes(":") ? 1 : -1;
+  };
 
-  const detected: string[] = []
-  const searchInput = useRef<HTMLInputElement>(null)
+  const detected: string[] = [];
+  const searchInput = useRef<HTMLInputElement>(null);
 
   return (
     <>
       <div className="todo-list">
+        {!online && (
+          <div className="fixed z-10 top-0 right-0 left-0 text-center bg-red-500 text-white">
+            Offline
+          </div>
+        )}
 
-        {!online && <div className="fixed z-10 top-0 right-0 left-0 text-center bg-red-500 text-white">Offline</div>}
-
-        {!todo.Items?.length && !todo.Public &&
-          <>⬆ <em> Bookmark this URL so you can find it later (only you will be able to access it !)</em></>
-        }
+        {!todo.Items?.length && !todo.Public && (
+          <>
+            ⬆{" "}
+            <em>
+              {" "}
+              Bookmark this URL so you can find it later (only you will be able
+              to access it !)
+            </em>
+          </>
+        )}
 
         <h1>{todo.Title}</h1>
 
-        {todo.Title && !todo.Public && <> <em>Secret list</em> 🔐</>}
+        {todo.Title && !todo.Public && (
+          <>
+            {" "}
+            <em>Secret list</em> 🔐
+          </>
+        )}
 
         <div className="flex">
           <input
@@ -112,26 +147,33 @@ const TodoList = ({ uuid }: { uuid: string }) => {
               }
             }}
           />
-          <button className="my-2 ml-2 px-2 rounded w-8 text-white" onClick={newItem}>
+          <button
+            className="my-2 ml-2 px-2 rounded w-8 text-white"
+            onClick={newItem}
+          >
             +
           </button>
         </div>
 
         <div>
-          <ul className='relative'>
+          <ul className="relative">
             {items.sort(sortFunction).map((item) => {
               const res = detectRegex(item.Content).toLowerCase();
               if (res && !detected.includes(res)) {
-                detected.push(res)
+                detected.push(res);
                 return (
                   <>
-                    <div className='flex sticky top-0 mt-6 -mx-4 backdrop-blur-sm bg-gray-50/90 dark:bg-gray-800/90 border-t border-gray-200'>
-                      <h3 className='flex-1 pl-6'>{capitalizeFirstLetter(res)} </h3>
-                      <button className="px-2 m-2 mr-6 rounded w-8 text-white align-middle"
+                    <div className="flex sticky top-0 mt-6 -mx-4 backdrop-blur-sm bg-gray-50/90 dark:bg-gray-800/90 border-t border-gray-200">
+                      <h3 className="flex-1 pl-6">
+                        {capitalizeFirstLetter(res)}{" "}
+                      </h3>
+                      <button
+                        className="px-2 m-2 mr-6 rounded w-8 text-white align-middle"
                         onClick={() => {
-                          setInput(res.toLowerCase() + ": ")
-                          searchInput.current?.focus()
-                        }}>
+                          setInput(res.toLowerCase() + ": ");
+                          searchInput.current?.focus();
+                        }}
+                      >
                         +
                       </button>
                     </div>
@@ -140,14 +182,14 @@ const TodoList = ({ uuid }: { uuid: string }) => {
                       <ItemView item={item} switchItem={switchItem} />
                     </li>
                   </>
-                )
+                );
               }
 
               return (
                 <li>
                   <ItemView item={item} switchItem={switchItem} />
                 </li>
-              )
+              );
             })}
           </ul>
         </div>
@@ -155,8 +197,6 @@ const TodoList = ({ uuid }: { uuid: string }) => {
         <button className="my-6 px-4 rounded" onClick={deleteItems}>
           🧹 Clean up
         </button>
-
-
       </div>
     </>
   );
