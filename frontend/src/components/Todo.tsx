@@ -70,13 +70,6 @@ const TodoList = ({ uuid }: { uuid: string }) => {
     tryToFetch("/api/todo/" + uuid + "/switch/" + item.ID, setOnline);
   };
 
-  const changeItem = async (item: Item) => {
-    setItems((items) =>
-      items.map((i) => (i.ID === item.ID ? { ...i, Done: !i.Done } : i))
-    );
-    tryToFetch("/api/todo/" + uuid + "/switch/" + item.ID, setOnline);
-  };
-
   const deleteItem = (item: Item) => {
     setItems((items) => items.filter((i) => i.ID !== item.ID));
     tryToFetch("/api/todo/" + uuid + "/delete/" + item.ID, setOnline);
@@ -116,7 +109,6 @@ const TodoList = ({ uuid }: { uuid: string }) => {
           <>
             ⬆{" "}
             <em>
-              {" "}
               Bookmark this URL so you can find it later (only you will be able
               to access it !)
             </em>
@@ -127,7 +119,6 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
         {todo.Title && !todo.Public && (
           <>
-            {" "}
             <em>Secret list</em> 🔐
           </>
         )}
@@ -136,7 +127,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
           <input
             ref={searchInput}
             autoFocus={true}
-            className="flex-1 my-2"
+            className="flex-1 my-2 text-input"
             placeholder="Add an item"
             type="text"
             value={input}

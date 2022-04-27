@@ -44,12 +44,7 @@
       @apply mt-2;
   }
 
-  textarea, input[type="text"] {
-      @apply box-content;
-      @apply p-2 mb-2;
-      @apply rounded;
-      @apply bg-gray-200 dark:bg-gray-800;
-  }
+  
 
   input:invalid {
       @apply bg-red-100;
@@ -73,3 +68,9 @@
 
 }
 
+.text-input {
+    @apply box-content;
+    @apply p-2 mb-2;
+    @apply rounded;
+    @apply bg-gray-200 dark:bg-gray-800;
+}

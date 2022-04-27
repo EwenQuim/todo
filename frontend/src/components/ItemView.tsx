@@ -1,5 +1,10 @@
 import React from "react";
 import { Item } from "../types";
+import { tryToFetch } from "../utils/utils";
+
+const changeItem = async (item: Item, to: string) => {
+  tryToFetch(`/api/item/${item.ID}/change?new_content=${to}`, {});
+};
 
 export const ItemView = ({
   item,
@@ -8,6 +13,8 @@ export const ItemView = ({
   item: Item;
   switchItem: any;
 }) => {
+  const [text, setText] = React.useState(item.Content);
+
   const stringTransform = (str: string) => {
     const res = str.match(/([\w ]+)?: *(.*)/);
     if (res) {
@@ -26,22 +33,23 @@ export const ItemView = ({
         onClick={async () => switchItem(item)}
         checked={item.Done}
       />
-      <label className="flex-1 mt-0" htmlFor={`item-${item.ID}`}>
+      <label className="flex-1 mt-0 bg-white" htmlFor={`item-${item.ID}`}>
         {item.Done ? (
-          <s>{stringTransform(item.Content)}</s>
+          <s>{stringTransform(text)}</s>
         ) : (
           <input
             type="text"
             name=""
             id=""
-            value={stringTransform(item.Content)}
+            className="bg-white border-none"
+            value={stringTransform(text)}
+            onChange={(e) => {
+              setText(e.target.value);
+              changeItem(item, e.target.value);
+            }}
           />
         )}
       </label>
-
-      {/* <button className="flex-none p-1 rounded w-8 h-8" onClick={async () => deleteItem(item)}>
-        ✏
-      </button> */}
     </div>
   );
 };
