@@ -1,82 +1,45 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
+import { useSWRConfig } from "swr";
+import { useRequest } from "../networking";
 import { Item, Todo } from "../types";
 import { capitalizeFirstLetter, detectRegex, tryToFetch } from "../utils/utils";
 import { ItemView } from "./ItemView";
 
 const TodoList = ({ uuid }: { uuid: string }) => {
   const [input, setInput] = useState("");
-  const [todo, setTodo] = useState<Todo>({
-    Title: "",
-    UUID: "",
-    Items: [],
-    Public: true,
-  });
-  const [items, setItems] = useState<Item[]>([]);
 
   const [online, setOnline] = useState(true);
 
-  useEffect(() => {
-    fetch("/api/todo/" + uuid)
-      .then((response) => response.json())
-      .then((data) => {
-        setTodo(data);
-        console.log("set items", data.Items);
-        if (data?.Items) {
-          setItems(data.Items);
-        }
-      });
-  }, [uuid]);
-
-  useEffect(() => {
-    document.title = todo.Title;
-  }, [todo.Title]);
+  const { data: todo } = useRequest<Todo>(`/api/todo/${uuid}`);
+  const { mutate } = useSWRConfig();
 
   const newItem = async () => {
-    if (input !== "") {
-      setInput("");
+    if (input.length === 0) {
+      return;
+    }
+    setInput("");
 
-      // Change locally (for an impression of speed)
-      // Create if empty
-      setItems([
-        ...items,
-        {
-          ID: -1,
-          Content: input,
-          Done: false,
-        },
-      ]);
-
-      // Then, try to sync with the server
-      try {
-        const response = await fetch(
-          "/api/todo/" + uuid + "/new?content=" + input
-        );
-        const responseJson = await response.json();
-        setItems((items) =>
-          items.map((item) =>
-            item.ID === -1 ? { ...item, ID: responseJson.ID } : item
-          )
-        );
-      } catch {
-        setOnline(false);
-      }
+    // Then, try to sync with the server
+    try {
+      await fetch("/api/todo/" + uuid + "/new?content=" + input);
+      mutate(`/api/todo/${uuid}`);
+    } catch {
+      setOnline(false);
     }
   };
 
   const switchItem = async (item: Item) => {
-    setItems((items) =>
-      items.map((i) => (i.ID === item.ID ? { ...i, Done: !i.Done } : i))
-    );
-    tryToFetch("/api/todo/" + uuid + "/switch/" + item.ID, setOnline);
+    await tryToFetch("/api/todo/" + uuid + "/switch/" + item.ID, setOnline);
+    mutate(`/api/todo/${uuid}`);
   };
 
-  const deleteItem = (item: Item) => {
-    setItems((items) => items.filter((i) => i.ID !== item.ID));
-    tryToFetch("/api/todo/" + uuid + "/delete/" + item.ID, setOnline);
+  const deleteItem = async (item: Item) => {
+    await tryToFetch("/api/todo/" + uuid + "/delete/" + item.ID, setOnline);
+    mutate(`/api/todo/${uuid}`);
   };
 
   const deleteItems = () => {
-    for (let item of items) {
+    for (const item of todo?.Items ?? []) {
       if (item.Done) {
         deleteItem(item);
       }
@@ -105,7 +68,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
           </div>
         )}
 
-        {!todo.Items?.length && !todo.Public && (
+        {!todo?.Items?.length && todo?.Public === false && (
           <>
             ⬆{" "}
             <em>
@@ -115,9 +78,9 @@ const TodoList = ({ uuid }: { uuid: string }) => {
           </>
         )}
 
-        <h1>{todo.Title}</h1>
+        <h1>{todo?.Title ?? "Todo"}</h1>
 
-        {todo.Title && !todo.Public && (
+        {todo?.Public === false && (
           <>
             <em>Secret list</em> 🔐
           </>
@@ -148,7 +111,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
         <div>
           <ul className="relative">
-            {items.sort(sortFunction).map((item) => {
+            {todo?.Items.sort(sortFunction).map((item) => {
               const res = detectRegex(item.Content).toLowerCase();
               if (res && !detected.includes(res)) {
                 detected.push(res);
@@ -169,7 +132,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
                       </button>
                     </div>
 
-                    <li>
+                    <li key={item.ID}>
                       <ItemView item={item} switchItem={switchItem} />
                     </li>
                   </>
