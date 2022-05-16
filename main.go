@@ -40,7 +40,7 @@ func main() {
 	r := chi.NewRouter()
 
 	// Middleware stack
-	r.Use(middleware.Compress(5, "text/html", "text/css", "application/javascript"))
+	r.Use(middleware.Compress(5, "text/html", "text/javascript", "text/css", "application/javascript"))
 
 	r.Use(chicors.Handler(chicors.Options{
 		AllowedOrigins: []string{"*"},
