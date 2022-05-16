@@ -35,7 +35,7 @@ export const ItemView = ({
           checked={item.Done}
         />
       </label>
-      <div className="flex-1 mt-0 bg-white">
+      <div className="flex-1 mt-0 bg-white dark:bg-black">
         {item.Done ? (
           <s>{stringTransform(text)}</s>
         ) : (
@@ -43,7 +43,7 @@ export const ItemView = ({
             type="text"
             name=""
             id=""
-            className="bg-white border-none w-full"
+            className="bg-white border-none w-full dark:bg-black"
             value={stringTransform(text)}
             onChange={(e) => {
               setText(e.target.value);
