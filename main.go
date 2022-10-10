@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/EwenQuim/todo-app/app/controllers"
 	"github.com/EwenQuim/todo-app/database"
@@ -46,6 +47,18 @@ func main() {
 		AllowedOrigins: []string{"*"},
 	}))
 	r.Use(middleware.Logger)
+
+	// Cache
+	r.Use(func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method == http.MethodGet {
+				if strings.HasSuffix(r.URL.Path, ".js") || strings.HasSuffix(r.URL.Path, ".css") {
+					w.Header().Set("Cache-Control", "public, max-age=604800")
+				}
+			}
+			h.ServeHTTP(w, r)
+		})
+	})
 
 	// Routes
 	res := controllers.TodoResources{Service: s}
