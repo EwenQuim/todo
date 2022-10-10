@@ -35,28 +35,17 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
   const deleteItem = async (item: Item) => {
     await tryToFetch("/api/todo/" + uuid + "/delete/" + item.ID, setOnline);
+  };
+
+  const deleteItems = async () => {
+    for (const item of todo?.Items ?? []) {
+      if (item.Done) {
+        await deleteItem(item);
+      }
+    }
     mutate(`/api/todo/${uuid}`);
   };
 
-  const deleteItems = () => {
-    for (const item of todo?.Items ?? []) {
-      if (item.Done) {
-        deleteItem(item);
-      }
-    }
-  };
-
-  const sortFunction = (a: Item, b: Item) => {
-    if (a.Content.includes(":") === b.Content.includes(":")) {
-      if (detectRegex(a.Content) === detectRegex(b.Content)) {
-        return a.ID > b.ID ? 1 : -1;
-      }
-      return a.Content.toLowerCase() > b.Content.toLowerCase() ? 1 : -1;
-    }
-    return a.Content.includes(":") ? 1 : -1;
-  };
-
-  const detected: string[] = [];
   const searchInput = useRef<HTMLInputElement>(null);
 
   return (
@@ -78,7 +67,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
           </>
         )}
 
-        <h1>{todo?.Title ?? "Todo"}</h1>
+        <h1 className="text-center md:text-left">{todo?.Title ?? "Todo"}</h1>
 
         {todo?.Public === false && (
           <>
@@ -109,44 +98,33 @@ const TodoList = ({ uuid }: { uuid: string }) => {
           </button>
         </div>
 
-        <div>
-          <ul className="relative">
-            {todo?.Items.sort(sortFunction).map((item) => {
-              const res = detectRegex(item.Content).toLowerCase();
-              if (res && !detected.includes(res)) {
-                detected.push(res);
-                return (
-                  <>
-                    <div className="flex sticky top-0 mt-6 -mx-4 backdrop-blur-sm bg-gray-50/90 dark:bg-gray-800/90 border-t border-gray-200">
-                      <h3 className="flex-1 pl-6">
-                        {capitalizeFirstLetter(res)}{" "}
-                      </h3>
-                      <button
-                        className="px-2 m-2 mr-6 rounded w-8 text-white align-middle"
-                        onClick={() => {
-                          setInput(res.toLowerCase() + ": ");
-                          searchInput.current?.focus();
-                        }}
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <li key={item.ID}>
-                      <ItemView item={item} switchItem={switchItem} />
-                    </li>
-                  </>
-                );
-              }
-
-              return (
-                <li>
-                  <ItemView item={item} switchItem={switchItem} />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        <ul>
+          {todo?.Groups?.map((group) => (
+            <li key={group.Name}>
+              {group.Name && (
+                <div className="flex sticky top-0 md:top-2 mt-6 -mx-4 backdrop-blur-sm bg-gray-50/90 dark:bg-gray-800/90 md:rounded-md">
+                  <h3 className="flex-1 pl-6">
+                    {capitalizeFirstLetter(group.Name)}{" "}
+                  </h3>
+                  <button
+                    className="px-2 m-2 mr-6 rounded w-8 text-white align-middle"
+                    onClick={() => {
+                      setInput(group.Name.toLowerCase() + ": ");
+                      searchInput.current?.focus();
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
+              )}
+              <ul>
+                {group.Items.map((item) => (
+                  <ItemView key={item.ID} item={item} switchItem={switchItem} />
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
 
         <button className="my-6 px-4 rounded" onClick={deleteItems}>
           🧹 Clean up

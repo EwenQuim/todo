@@ -24,7 +24,7 @@ export const ItemView = ({
   };
 
   return (
-    <div className="mx-2 flex items-center">
+    <div className="flex items-center">
       <label className="pl-2 pr-4 py-1 my-auto" htmlFor={`item-${item.ID}`}>
         <input
           className="flex-none"

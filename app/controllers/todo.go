@@ -41,16 +41,29 @@ func (rs TodoResources) GetTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	todo.Groups = make(map[string][]model.Item)
+	todo.Groups = make([]model.Group, 0, len(todo.Items))
+	todo.Groups = append(todo.Groups, model.Group{Name: ""})
 	for _, item := range todo.Items {
 		group, _ := validator.GetGroupAndContent(item.Content)
-		if len(todo.Groups[group]) == 0 {
-			todo.Groups[group] = []model.Item{}
+
+		var found bool
+		for i, g := range todo.Groups {
+			if g.Name == group {
+				todo.Groups[i].Items = append(todo.Groups[i].Items, item)
+				found = true
+				break
+			}
 		}
-		todo.Groups[group] = append(todo.Groups[group], item)
+		if !found {
+			todo.Groups = append(todo.Groups, model.Group{Name: group, Items: []model.Item{item}})
+		}
 	}
 
-	json.NewEncoder(w).Encode(todo)
+	err = json.NewEncoder(w).Encode(todo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (rs TodoResources) NewTodo(w http.ResponseWriter, r *http.Request) {
