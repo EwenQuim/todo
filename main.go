@@ -27,7 +27,13 @@ func main() {
 	// Custom path to db
 	var dbPath string
 	flag.StringVar(&dbPath, "db", "todo.db", "path to database")
+
+	// Custom portNumber
+	var portNumber int
+	flag.IntVar(&portNumber, "port", 8084, "port to listen on")
 	flag.Parse()
+
+	port := fmt.Sprintf(":%d", portNumber)
 
 	fsub, err := fs.Sub(reactBuild, "frontend/build")
 	if err != nil {
@@ -53,7 +59,7 @@ func main() {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.Method == http.MethodGet {
 				if strings.HasSuffix(r.URL.Path, ".js") || strings.HasSuffix(r.URL.Path, ".css") {
-					w.Header().Set("Cache-Control", "public, max-age=604800")
+					w.Header().Set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800")
 				}
 			}
 			h.ServeHTTP(w, r)
@@ -66,8 +72,8 @@ func main() {
 
 	r.Handle("/*", http.FileServer(spaFileSystem{http.FS(fsub)}))
 
-	fmt.Println("server started at :8084")
-	http.ListenAndServe(":8084", r)
+	fmt.Println("server started at port", port)
+	http.ListenAndServe(port, r)
 }
 
 type spaFileSystem struct {

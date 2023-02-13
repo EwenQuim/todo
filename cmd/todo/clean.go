@@ -11,7 +11,10 @@ import (
 func clean() func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		fmt.Println("Cleaning up todo list")
-		todo := getTodo(URL)
+		todo, err := getTodo(URL)
+		if err != nil {
+			return err
+		}
 
 		var wg sync.WaitGroup
 		for _, task := range todo.Items {

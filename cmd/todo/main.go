@@ -18,7 +18,7 @@ type localItem struct {
 	toMarkAsDone bool
 }
 
-const URL = "https://todo.quimerch.com/api/todo/435ebc21-d12a-4979-a988-48143e31fca6"
+const URL = "https://todo.quimerch.com/api/todo/7405b29c-76c5-4f56-8e16-5a4e92342a3e"
 
 func main() {
 	app := &cli.App{

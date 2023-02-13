@@ -11,7 +11,11 @@ import (
 
 func list() func(c *cli.Context) error {
 	return func(c *cli.Context) error {
-		todo := sortSpecial(getTodo(URL))
+		todo, err := getTodo(URL)
+		if err != nil {
+			return err
+		}
+		todo = sortSpecial(todo)
 
 		var list []string
 		var selectedBeforeChange []string
@@ -35,7 +39,7 @@ func list() func(c *cli.Context) error {
 		// }{}
 		answers := []string{}
 
-		err := survey.AskOne(p, &answers)
+		err = survey.AskOne(p, &answers)
 		if err != nil {
 			fmt.Println(err)
 			return nil
