@@ -30,7 +30,7 @@ func main() {
 
 	// Custom portNumber
 	var portNumber int
-	flag.IntVar(&portNumber, "port", 8084, "port to listen on")
+	flag.IntVar(&portNumber, "port", 80, "port to listen on")
 	flag.Parse()
 
 	port := fmt.Sprintf(":%d", portNumber)
