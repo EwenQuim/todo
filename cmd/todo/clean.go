@@ -23,10 +23,23 @@ func clean() func(c *cli.Context) error {
 				go func(task localItem) {
 					defer wg.Done()
 
-					_, err := http.Get(URL + "/delete/" + string(task.ID))
+					// Create client
+					client := &http.Client{}
+
+					// Create request
+					req, err := http.NewRequest("DELETE", "http://www.example.com/bucket/sample", nil)
 					if err != nil {
 						fmt.Println(err)
+						return
 					}
+
+					// Fetch Request
+					resp, err := client.Do(req)
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+					defer resp.Body.Close()
 				}(task)
 			}
 		}

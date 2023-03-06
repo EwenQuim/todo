@@ -1,9 +1,8 @@
 import React from "react";
 import { Item } from "../types";
-import { tryToFetch } from "../utils/utils";
 
 const changeItem = async (item: Item, to: string) => {
-  tryToFetch(`/api/item/${item.ID}/change?new_content=${to}`, {});
+  await fetch(`/api/item/${item.ID}/change?new_content=${to}`, {});
 };
 
 export const ItemView = ({

@@ -1,8 +1,7 @@
 import React, { useRef, useState } from "react";
-import { useSWRConfig } from "swr";
-import { useRequest } from "../networking";
+import { apiFetcher, useRequest } from "../networking";
 import { Item, Todo } from "../types";
-import { capitalizeFirstLetter, detectRegex, tryToFetch } from "../utils/utils";
+import { capitalizeFirstLetter } from "../utils/utils";
 import { ItemView } from "./ItemView";
 
 const TodoList = ({ uuid }: { uuid: string }) => {
@@ -10,31 +9,36 @@ const TodoList = ({ uuid }: { uuid: string }) => {
 
   const [online, setOnline] = useState(true);
 
-  const { data: todo } = useRequest<Todo>(`/api/todo/${uuid}`);
-  const { mutate } = useSWRConfig();
+  const { data: todo, mutate } = useRequest<Todo>(`/api/todo/${uuid}`);
 
   const newItem = async () => {
     if (input.length === 0) {
       return;
     }
-    setInput("");
+
+    console.log("Adding item", { content: input, todoID: uuid });
 
     // Then, try to sync with the server
     try {
-      await fetch("/api/todo/" + uuid + "/new?content=" + input);
-      mutate(`/api/todo/${uuid}`);
+      await apiFetcher("/api/todo/item", {
+        method: "POST",
+
+        body: { content: input, todoID: uuid },
+      });
+      mutate();
     } catch {
       setOnline(false);
     }
+    setInput("");
   };
 
   const switchItem = async (item: Item) => {
-    await tryToFetch("/api/todo/" + uuid + "/switch/" + item.ID, setOnline);
-    mutate(`/api/todo/${uuid}`);
+    await apiFetcher("/api/todo/" + uuid + "/switch/" + item.ID);
+    mutate();
   };
 
   const deleteItem = async (item: Item) => {
-    await tryToFetch("/api/todo/" + uuid + "/delete/" + item.ID, setOnline);
+    await apiFetcher(`/api/todo/item/${item.ID}`, { method: "DELETE" });
   };
 
   const deleteItems = async () => {
@@ -43,7 +47,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
         await deleteItem(item);
       }
     }
-    mutate(`/api/todo/${uuid}`);
+    mutate();
   };
 
   const searchInput = useRef<HTMLInputElement>(null);
@@ -118,7 +122,7 @@ const TodoList = ({ uuid }: { uuid: string }) => {
                 </div>
               )}
               <ul>
-                {group.Items.map((item) => (
+                {group?.Items?.map((item) => (
                   <ItemView key={item.ID} item={item} switchItem={switchItem} />
                 ))}
               </ul>

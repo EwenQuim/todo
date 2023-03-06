@@ -16,16 +16,17 @@ func (rs TodoResources) RegisterRoutes(r *chi.Mux) {
 	apiRouter.Use(jsonApi)
 
 	apiRouter.Get("/todo/new", rs.NewTodo)
+	apiRouter.Post("/todo", rs.NewTodo)
 	apiRouter.Get("/todo", rs.GetAllTodos)
 	apiRouter.Get("/todo/{uuid}", rs.GetTodo)
 	apiRouter.Get("/todo/{uuid}/delete", rs.DeleteTodo)
 
-	apiRouter.Get("/todo/{uuid}/new", rs.NewItem)
-	apiRouter.Get("/todo/{uuid}/delete/{itemid}", rs.DeleteItem)
+	apiRouter.Post("/todo/item", rs.NewItem)
+
+	apiRouter.Delete("/todo/item/{itemid}", rs.DeleteItem)
 	apiRouter.Get("/todo/{uuid}/switch/{itemid}", rs.SwitchItem)
 	apiRouter.Get("/todo/{uuid}/change/{itemid}", rs.ChangeItem)
 
-	apiRouter.Get("/item/{itemid}/delete", rs.DeleteItem)
 	apiRouter.Get("/item/{itemid}/switch", rs.SwitchItem)
 	apiRouter.Get("/item/{itemid}/change", rs.ChangeItem)
 
@@ -43,5 +44,5 @@ func jsonApi(h http.Handler) http.Handler {
 }
 
 func ping(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("pong"))
+	w.Write([]byte(`{"response":"pong")}`))
 }

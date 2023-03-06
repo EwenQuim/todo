@@ -2,75 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
-
   html {
-      @apply bg-white dark:bg-black dark:text-gray-200;
+    @apply bg-white dark:bg-black dark:text-gray-200;
   }
 
   body {
-      @apply font-sans mx-auto px-4;
+    @apply font-sans mx-auto px-4;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-      @apply my-2
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply my-2;
   }
 
   h1 {
-      @apply text-3xl;
+    @apply text-3xl;
   }
   h2 {
-      @apply text-2xl;
+    @apply text-2xl;
   }
   h3 {
-      @apply text-xl;
+    @apply text-xl;
   }
 
   p {
-      @apply my-2;
+    @apply my-2;
   }
 
   button {
-      @apply bg-gray-200 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-800;
+    @apply bg-gray-200 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-800;
   }
 
   input[type="submit"] {
-      @apply bg-purple-600 hover:bg-purple-800;
-      @apply text-white;
+    @apply bg-purple-600 hover:bg-purple-800;
+    @apply text-white;
   }
 
   label {
-      @apply mt-2;
+    @apply mt-2;
   }
 
-  
-
   input:invalid {
-      @apply bg-red-100;
+    @apply bg-red-100;
   }
 
   a {
-      @apply text-blue-500;
+    @apply text-blue-500;
   }
 
   a:hover {
-      @apply text-blue-800;
+    @apply text-blue-800;
   }
 
   a:visited {
-      @apply text-purple-500;
+    @apply text-purple-500;
   }
 
   a:visited:hover {
-      @apply text-purple-900;
+    @apply text-purple-900;
   }
-
 }
 
 .text-input {
-    @apply box-content;
-    @apply p-2 mb-2;
-    @apply rounded;
-    @apply bg-gray-200 dark:bg-gray-800;
+  @apply box-content;
+  @apply p-2 mb-2;
+  @apply rounded;
+  @apply bg-gray-200 dark:bg-gray-800;
 }

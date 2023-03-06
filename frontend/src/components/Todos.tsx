@@ -1,37 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Todo } from "../types";
+import { apiFetcher, useRequest } from "../networking";
 
 export const Todos = () => {
   const [input, setInput] = useState("");
   const [newTodoPrivate, setNewTodoPrivate] = useState(false);
-  const [todos, setTodos] = useState<Todo[]>([]);
 
-  const getTodos = () => {
-    fetch("/api/todo")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setTodos(data);
-      });
-  };
+  const { data: todos, error, mutate } = useRequest<Todo[]>("/api/todo");
 
   const newTodo = async () => {
     if (input !== "") {
       setInput("");
-      const response = await fetch(
-        "/api/todo/new?title=" + input + "&public=" + !newTodoPrivate
-      );
-      const jsonResponse: Todo = await response.json();
-      console.log(jsonResponse.UUID);
+      const response = await apiFetcher<{ UUID: string }>("/api/todo", {
+        method: "POST",
+        queryParams: {
+          title: input,
+          public: !newTodoPrivate,
+        },
+      });
+
       // move to another page
-      window.location.href = "/" + jsonResponse.UUID;
-      getTodos();
+      window.location.href = "/" + response.UUID;
+      mutate();
     }
   };
-
-  useEffect(() => {
-    getTodos();
-  }, []);
 
   return (
     <div className="App">
@@ -73,7 +65,7 @@ export const Todos = () => {
       <h2>Public todo lists</h2>
 
       <ul>
-        {todos.map((todo) => {
+        {todos?.map((todo) => {
           return (
             <li>
               {" "}

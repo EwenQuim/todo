@@ -50,7 +50,8 @@ func main() {
 	r.Use(middleware.Compress(5, "text/html", "text/javascript", "text/css", "application/javascript"))
 
 	r.Use(chicors.Handler(chicors.Options{
-		AllowedOrigins: []string{"*"},
+		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:8084"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 	}))
 	r.Use(middleware.Logger)
 
@@ -72,7 +73,7 @@ func main() {
 
 	r.Handle("/*", http.FileServer(spaFileSystem{http.FS(fsub)}))
 
-	fmt.Println("server started at port", port)
+	fmt.Printf("server started on http://localhost%s\n", port)
 	http.ListenAndServe(port, r)
 }
 
