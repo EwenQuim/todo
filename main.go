@@ -13,9 +13,9 @@ import (
 
 	"github.com/EwenQuim/todo-app/app/controllers"
 	"github.com/EwenQuim/todo-app/database"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	chicors "github.com/go-chi/cors"
+	"github.com/go-fuego/fuego"
 )
 
 //go:generate yarn --cwd frontend build
@@ -44,19 +44,21 @@ func main() {
 		DB:    database.InitDatabase(dbPath),
 		Regex: *regexp.MustCompile(`^ *([\w ]+) *: *(.*) *$`),
 	}
-	r := chi.NewRouter()
+	r := fuego.NewServer(
+		fuego.WithPort(port),
+	)
 
 	// Middleware stack
-	r.Use(middleware.Compress(5, "text/html", "text/javascript", "text/css", "application/javascript"))
+	fuego.Use(r, middleware.Compress(5, "text/html", "text/javascript", "text/css", "application/javascript"))
 
-	r.Use(chicors.Handler(chicors.Options{
+	fuego.Use(r, chicors.Handler(chicors.Options{
 		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:8084"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 	}))
-	r.Use(middleware.Logger)
+	fuego.Use(r, middleware.Logger)
 
 	// Cache
-	r.Use(func(h http.Handler) http.Handler {
+	fuego.Use(r, func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.Method == http.MethodGet {
 				if strings.HasSuffix(r.URL.Path, ".js") || strings.HasSuffix(r.URL.Path, ".css") {
@@ -71,10 +73,9 @@ func main() {
 	res := controllers.TodoResources{Service: s}
 	res.RegisterRoutes(r)
 
-	r.Handle("/*", http.FileServer(spaFileSystem{http.FS(fsub)}))
+	fuego.Handle(r, "/*", http.FileServer(spaFileSystem{http.FS(fsub)}))
 
-	fmt.Printf("server started on http://localhost%s\n", port)
-	http.ListenAndServe(port, r)
+	r.Run()
 }
 
 type spaFileSystem struct {

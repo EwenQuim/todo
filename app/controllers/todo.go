@@ -8,7 +8,6 @@ import (
 	"github.com/EwenQuim/todo-app/app/model"
 	"github.com/EwenQuim/todo-app/app/query"
 	"github.com/EwenQuim/todo-app/app/validator"
-	"github.com/go-chi/chi/v5"
 )
 
 func (rs TodoResources) GetAllTodos(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +21,7 @@ func (rs TodoResources) GetAllTodos(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rs TodoResources) GetTodo(w http.ResponseWriter, r *http.Request) {
-	uuid := chi.URLParam(r, "uuid")
+	uuid := r.PathValue("uuid")
 
 	if !validator.UUID(uuid) {
 		http.Error(w, "Invalid UUID", http.StatusBadRequest)
@@ -82,7 +81,7 @@ func (rs TodoResources) NewTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rs TodoResources) DeleteTodo(w http.ResponseWriter, r *http.Request) {
-	err := query.DeleteTodo(rs.Service, chi.URLParam(r, "uuid"))
+	err := query.DeleteTodo(rs.Service, r.PathValue("uuid"))
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

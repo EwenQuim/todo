@@ -4,35 +4,34 @@ import (
 	"net/http"
 
 	"github.com/EwenQuim/todo-app/database"
-	"github.com/go-chi/chi/v5"
+	"github.com/go-fuego/fuego"
 )
 
 type TodoResources struct {
 	database.Service
 }
 
-func (rs TodoResources) RegisterRoutes(r *chi.Mux) {
-	apiRouter := chi.NewRouter()
-	apiRouter.Use(jsonApi)
+func (rs TodoResources) RegisterRoutes(r *fuego.Server) {
+	apiRouter := fuego.Group(r, "/api")
+	fuego.UseStd(apiRouter, jsonApi)
 
-	apiRouter.Get("/todo/new", rs.NewTodo)
-	apiRouter.Post("/todo", rs.NewTodo)
-	apiRouter.Get("/todo", rs.GetAllTodos)
-	apiRouter.Get("/todo/{uuid}", rs.GetTodo)
-	apiRouter.Get("/todo/{uuid}/delete", rs.DeleteTodo)
+	fuego.GetStd(apiRouter, "/todo/new", rs.NewTodo)
+	fuego.PostStd(apiRouter, "/todo", rs.NewTodo)
+	fuego.GetStd(apiRouter, "/todo", rs.GetAllTodos)
+	fuego.GetStd(apiRouter, "/todo/{uuid}", rs.GetTodo)
+	fuego.GetStd(apiRouter, "/todo/{uuid}/delete", rs.DeleteTodo)
 
-	apiRouter.Post("/todo/item", rs.NewItem)
+	fuego.PostStd(apiRouter, "/todo/item", rs.NewItem)
 
-	apiRouter.Delete("/todo/item/{itemid}", rs.DeleteItem)
-	apiRouter.Get("/todo/{uuid}/switch/{itemid}", rs.SwitchItem)
-	apiRouter.Get("/todo/{uuid}/change/{itemid}", rs.ChangeItem)
+	fuego.DeleteStd(apiRouter, "/todo/item/{itemid}", rs.DeleteItem)
+	fuego.GetStd(apiRouter, "/todo/{uuid}/switch/{itemid}", rs.SwitchItem)
+	fuego.GetStd(apiRouter, "/todo/{uuid}/change/{itemid}", rs.ChangeItem)
 
-	apiRouter.Get("/item/{itemid}/switch", rs.SwitchItem)
-	apiRouter.Get("/item/{itemid}/change", rs.ChangeItem)
+	fuego.GetStd(apiRouter, "/item/{itemid}/switch", rs.SwitchItem)
+	fuego.GetStd(apiRouter, "/item/{itemid}/change", rs.ChangeItem)
 
-	apiRouter.Get("/ping", ping)
+	fuego.GetStd(apiRouter, "/ping", ping)
 
-	r.Mount("/api", apiRouter)
 }
 
 // jsonApi applies the content-type header to all responses of the api as json
